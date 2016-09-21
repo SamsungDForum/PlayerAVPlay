@@ -49,8 +49,8 @@ function VideoPlayer(config) {
          * Function to initialize the playback.
          * @param {String} url - content url, if there is no value then take url from config
          */
-        play: function (url) {
-            /* Create listener object. */
+    	open: function(url){
+    		/* Create listener object. */
             var listener = {
                 onbufferingstart: function () {
                     log("Buffering start.");
@@ -92,33 +92,22 @@ function VideoPlayer(config) {
             } catch (e) {
                 log(e);
             }
-
-            //set bitrates according to the values in your stream manifest
-            //			this.setBitrate(477000, 2056000, 2056000, 688000);
-
+    	},
+    	
+        play: function () {
             //set 4k
             if (isUhd) {
                 this.set4K();
-            }
-
-            webapis.avplay.prepare();
-            webapis.avplay.play();
+            }           
+            
+            if (webapis.avplay.getState() === 'IDLE') {
+            	webapis.avplay.prepare();                
+                webapis.avplay.play();
+            } else if(webapis.avplay.getState() === 'PAUSED'){
+            	webapis.avplay.play();
+            }            
         },
-        /**
-         * Function to start/pause playback.
-         * @param {String} url - content url, if there is no value then take url from config
-         */
-        playPause: function (url) {
-            if (!url) {
-                url = config.url;
-            }
-
-            if (webapis.avplay.getState() === 'PLAYING' || webapis.avplay.getState() === 'PAUSED') {
-                this.pause();
-            } else {
-                this.play(url);
-            }
-        },
+       
         /**
          * Function to stop current playback.
          */
@@ -140,14 +129,7 @@ function VideoPlayer(config) {
             if (!url) {
                 url = config.url;
             }
-            if (webapis.avplay.getState() === 'PLAYING') {
-                webapis.avplay.pause();
-            } else if (webapis.avplay.getState() === 'NONE' || webapis.avplay.getState() === 'IDLE') {
-                this.play(url);
-            } else {
-                //this works like resume
-                webapis.avplay.play();
-            }
+            webapis.avplay.pause();
         },
         /**
          * Jump forward 3 seconds (3000 ms).

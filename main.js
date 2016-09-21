@@ -10,7 +10,7 @@
 
         if (msg) {
             // Update logs
-            console.log('[PlayerAvplay]: ', msg);
+            console.log('[PlayerAvplay]: ' + msg);
             logsEl.innerHTML += msg + '<br />';
         } else {
             // Clear logs
@@ -30,12 +30,11 @@
      */
     function registerKeys() {
         var usedKeys = [
+            'MediaPlay',	
             'MediaPause',
-            'MediaPlay',
-            'MediaPlayPause',
-            'MediaFastForward',
-            'MediaRewind',
             'MediaStop',
+            'MediaFastForward',
+            'MediaRewind',            
             '0',
             '1',
             '2',
@@ -59,10 +58,11 @@
                 case 13:    // Enter
                     player.toggleFullscreen();
                     break;
-                case 10252: // MediaPlayPause
                 case 415:   // MediaPlay
+		    player.play();
+		    break;
                 case 19:    // MediaPause
-                    player.playPause();
+                    player.pause();
                     break;
                 case 413:   // MediaStop
                     player.stop();
@@ -88,9 +88,8 @@
                 case 10009: // Return
                     if (webapis.avplay.getState() !== 'IDLE' && webapis.avplay.getState() !== 'NONE') {
                         player.stop();
-                    } else {
-                        tizen.application.getCurrentApplication().hide();
                     }
+                    tizen.application.getCurrentApplication().hide();
                     break;
                 default:
                     log("Unhandled key");
@@ -102,32 +101,39 @@
         document.querySelector('.video-controls .play').addEventListener(
             'click',
             function () {
-                player.playPause();
-                document.getElementById('streamParams').style.visibility = 'visible';
+                player.play();
             }
         );
         document.querySelector('.video-controls .stop').addEventListener(
             'click',
             function () {
                 player.stop();
-                document.getElementById('streamParams').style.visibility = 'hidden';
             }
         );
         document.querySelector('.video-controls .pause').addEventListener(
             'click',
-            player.playPause
+            function() {
+            	player.pause();
+            }
+            
         );
         document.querySelector('.video-controls .ff').addEventListener(
             'click',
-            player.ff
+            function() {
+            	player.ff()
+            }
         );
         document.querySelector('.video-controls .rew').addEventListener(
             'click',
-            player.rew
+            function() {
+            	player.rew();
+            }
         );
         document.querySelector('.video-controls .fullscreen').addEventListener(
             'click',
-            player.toggleFullscreen
+            function() {
+            	player.toggleFullscreen();
+            }
         );
     }
 
@@ -206,6 +212,7 @@
 
                 // initialize player - loaded from videoPlayer.js
                 player = new VideoPlayer(config);
+                player.open(config.url);
                 registerMouseEvents();
             },
             function(error) {

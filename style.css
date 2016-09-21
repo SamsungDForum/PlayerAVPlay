@@ -83,13 +83,6 @@ fieldset {
     z-index: 1;
 }
 
-#streamParams {
-    visibility: hidden;
-    font-size: 30px;
-    width: 500px;
-    padding: 5px;
-}
-
 .video-controls {
     z-index: 2;
     margin: 0;
